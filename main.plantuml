@@ -1,0 +1,79 @@
+@startuml
+
+class Game {
+    - Board board
+    - GameIO* io
+    - vector<Move> move_history
+    - Color current_player
+    --
+    + run()
+    - handlePlayerTurn()
+    - handleMachineTurn()
+}
+
+class Board {
+    - Piece* grid[8][8]
+    - int red_pieces
+    - int black_pieces
+    --
+    + initialize()
+    + getPiece(pos): const Piece*
+    + isLegalMove(m): MoveError
+    + movePiece(m): bool
+}
+
+class Piece {
+    - Color color
+    - bool isKing
+    --
+    + Piece(c)
+    + makeKing()
+    + getSymbol(): char
+}
+
+interface GameIO {
+    + displayBoard(board, status, error)
+    + getPlayerMove(player, move_out): bool
+    + displayMoveHistory(history)
+}
+
+class ConsoleIO {
+    + displayBoard(...)
+    + getPlayerMove(...)
+    + displayMoveHistory(...)
+}
+
+class Position {
+    + int row
+    + int col
+    --
+    + ind_to_str(out_str)
+    + {static} str_to_ind(s): Position
+}
+
+class Move {
+    + Position from
+    + Position to
+    + Color player_color
+    + move_string[16]
+    --
+    + to_char(): const char*
+}
+
+
+
+Game <-- Board
+
+Game <-- GameIO
+
+ConsoleIO --> GameIO
+
+Board <-- Piece
+
+Game --> Move
+
+Board --> Move
+
+Move <-- Position
+
+@enduml
