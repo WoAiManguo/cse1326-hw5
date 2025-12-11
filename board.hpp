@@ -30,6 +30,7 @@ private:
     bool isKingRow(const Position& pos, Color color) const;
     MoveError validateJump(const Move& m, int dr, int dc) const;
     bool isJumpAvailable(Color player_color) const;
+
 public:
     Board();
     ~Board();
@@ -43,9 +44,9 @@ public:
     int getRedCount() const { return red_pieces; }
     int getBlackCount() const { return black_pieces; }
 
-    
-    MoveError isLegalMove(const Move& m) const; 
+    MoveError isLegalMove(const Move& m) const;
 
+    bool canJump(const Position& pos) const;
     bool movePiece(const Move& m);
 
 

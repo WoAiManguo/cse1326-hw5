@@ -1,5 +1,6 @@
 CXX = g++-14
-CXXFLAGS = -fdiagnostics-color=always -g -Wall -Wextra -Wpedantic
+CXXFLAGS = -fdiagnostics-color=always -g -Wall -Wextra -Wpedantic $(shell fltk-config --cxxflags)
+LDFLAGS = $(shell fltk-config --ldflags)
 
 TARGET = checkers
 
@@ -10,7 +11,7 @@ OBJS = $(SRCS:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $@
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

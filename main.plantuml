@@ -34,13 +34,36 @@ class Piece {
 interface GameIO {
     + displayBoard(board, status, error)
     + getPlayerMove(player, move_out): bool
-    + displayMoveHistory(history)
+    + displayHistory(history)
+    + waitForContinuation()
 }
 
 class ConsoleIO {
     + displayBoard(...)
     + getPlayerMove(...)
-    + displayMoveHistory(...)
+    + displayHistory(...)
+    + waitForContinuation()
+}
+
+class FltkIO {
+    - Fl_Window* window
+    - Fl_Button* board_buttons[8][8]
+    - Fl_Browser* history_view
+    - Fl_Button* btn_new_game
+    - Fl_Button* btn_end_game
+    - Fl_Button* btn_quit
+    - Fl_Box* status_box
+    - const Board* current_board_ptr
+    - struct input_state
+    --
+    + displayBoard(...)
+    + getPlayerMove(...)
+    + displayHistory(...)
+    + waitForContinuation()
+    - handle_board_click(r, c)
+    - handle_end_game()
+    - handle_quit()
+    - handle_new_game()
 }
 
 class Position {
@@ -55,7 +78,8 @@ class Move {
     + Position from
     + Position to
     + Color player_color
-    + move_string[16]
+    + bool is_multijump
+    + move_string[64]
     --
     + to_char(): const char*
 }
@@ -67,6 +91,8 @@ Game <-- Board
 Game <-- GameIO
 
 ConsoleIO --> GameIO
+
+FltkIO --> GameIO
 
 Board <-- Piece
 

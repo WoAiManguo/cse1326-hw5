@@ -11,7 +11,7 @@ private:
     std::vector<Move> move_history;
     Color current_player;
     bool game_over;
-    char error_message[100];
+    char error_message[256];
 
     void initializeGame();
     bool handlePlayerTurn();

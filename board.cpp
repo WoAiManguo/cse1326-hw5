@@ -78,7 +78,6 @@ bool Board::isJumpAvailable(Color player_color) const {
         for (int c = 0; c < 8; ++c) {
             const Piece* piece = grid[r][c];
             if (piece != NULL && piece->getColor() == player_color) {
-                
                 for (int dr_sign = -1; dr_sign <= 1; dr_sign += 2) {
                     for (int dc_sign = -1; dc_sign <= 1; dc_sign += 2) {
                         int dr = dr_sign * 2;
@@ -108,12 +107,45 @@ bool Board::isJumpAvailable(Color player_color) const {
     return false;
 }
 
+bool Board::canJump(const Position& pos) const {
+    const Piece* piece = getPiece(pos);
+    if (!piece) return false;
+
+    int r = pos.row;
+    int c = pos.col;
+    Color player_color = piece->getColor();
+
+    for (int dr_sign = -1; dr_sign <= 1; dr_sign += 2) {
+        for (int dc_sign = -1; dc_sign <= 1; dc_sign += 2) {
+            int dr = dr_sign * 2;
+            int dc = dc_sign * 2;
+            
+            Position end = {r + dr, c + dc};
+
+            if (end.is_valid() && getPiece(end) == NULL) {
+                if (!piece->getKing()) {
+                    if (player_color == BLACK && dr < 0) continue;
+                    if (player_color == RED && dr > 0) continue;
+                }
+
+                Position captured_pos = {r + (dr / 2), c + (dc / 2)};
+                const Piece* captured_piece = getPiece(captured_pos);
+
+                if (captured_piece != NULL && captured_piece->getColor() != player_color) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 MoveError Board::validateJump(const Move& m, int dr, int dc) const {
     const Piece* moveable_piece = getPiece(m.from); 
     
     if (!moveable_piece->getKing()) {
         if (moveable_piece->getColor() == BLACK) {
-            if (dr < 0) return ERROR_REGULAR_BACKWARD; 
+            if (dr < 0) return ERROR_REGULAR_BACKWARD;
         } else {
             if (dr > 0) return ERROR_REGULAR_BACKWARD;
         }
@@ -134,7 +166,7 @@ MoveError Board::validateJump(const Move& m, int dr, int dc) const {
         return ERROR_JUMP_OWN_PIECE;
     }
 
-    return NO_ERROR; 
+    return NO_ERROR;
 }
 
 MoveError Board::isLegalMove(const Move& m) const {
@@ -168,17 +200,17 @@ MoveError Board::isLegalMove(const Move& m) const {
     }
     
     if (abs_dr == 1) {
-        if (isJumpAvailable(m.player_color)) return ERROR_JUMP_MANDATORY; 
+        if (isJumpAvailable(m.player_color)) return ERROR_JUMP_MANDATORY;
         
         if (!moveable_piece->getKing()) {
-            if (moveable_piece->getColor() == BLACK) { 
+            if (moveable_piece->getColor() == BLACK) {
                 if (dr < 0) return ERROR_REGULAR_BACKWARD;
-            } else { 
+            } else {
                 if (dr > 0) return ERROR_REGULAR_BACKWARD;
             }
         }
         
-        return NO_ERROR; 
+        return NO_ERROR;
 
     } else {
         return validateJump(m, dr, dc);

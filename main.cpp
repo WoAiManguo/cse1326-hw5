@@ -1,30 +1,31 @@
 #include "game.hpp"
 #include "fltkio.hpp"
 #include "consoleio.hpp"
-#include <cstdio>
+#include <iostream>
 #include <cstdlib>
-
-enum IOoption{
-    CONSOLE,
-    FLTK
-};
+#include <cstring>
 
 int main(){
-    char* input;
-    scanf("%s", &input);
+    GameIO* io = NULL;
+    char input[100];
 
-    printf("Enter CONSOLE for consoleio. Enter FLTK for fltkio: ");
+    while (io == NULL) {
+        std::cout << "Enter CONSOLE for consoleio. Enter FLTK for fltk GUI: ";
+        if (!(std::cin >> input)) return 0;
 
-    switch(input){
-        case CONSOLE: GameIO* io = new ConsoleIO(); break;
-        case FLTK: GameIO* io = new FltkIO(); break;
-        case default: printf("Unrecognized option. Please try again: ");
+        if (strcmp(input, "CONSOLE") == 0) {
+            io = new ConsoleIO();
+        } else if (strcmp(input, "FLTK") == 0) {
+            io = new FltkIO();
+        } else {
+            std::cout << "Unrecognized option. Please try again." << std::endl;
+        }
     }
-    
 
-    Game checkers_game(io);
-
-    checkers_game.run();
+    while (true) {
+        Game checkers_game(io);
+        checkers_game.run();
+    }
 
     delete io;
     io = NULL;
